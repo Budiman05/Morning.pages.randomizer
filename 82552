@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflection Question Randomizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .main-section {
+            margin-bottom: 40px;
+        }
+
+        .question-display {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #84fab0, #8fd3f4);
+            color: #333;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ff9a9e, #fecfef);
+            color: #333;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .add-question-section {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .questions-list {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .question-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .question-content {
+            flex: 1;
+            margin-right: 15px;
+        }
+
+        .question-category {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        .question-text-item {
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .delete-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background: #ff3838;
+        }
+
+        .stats {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+        }
+
+        .toggle-section {
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Reflection Question Randomizer</h1>
+        
+        <div class="main-section">
+            <div class="question-display" id="questionDisplay">
+                <div class="question-text">Click "Get Random Question" to start reflecting!</div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn-primary" onclick="getRandomQuestion()">🎲 Get Random Question</button>
+                <button class="btn-secondary" onclick="toggleAddSection()">➕ Add New Question</button>
+                <button class="btn-success" onclick="toggleQuestionsList()">📋 View All Questions</button>
+                <button class="btn-danger" onclick="clearAllQuestions()">🗑️ Clear All</button>
+            </div>
+        </div>
+
+        <div class="add-question-section hidden" id="addQuestionSection">
+            <h3>Add New Reflection Question</h3>
+            <div class="form-group">
+                <label for="questionCategory">Category:</label>
+                <select id="questionCategory">
+                    <option value="Backward Looking">Backward Looking</option>
+                    <option value="Forward Looking">Forward Looking</option>
+                    <option value="Personal Growth">Personal Growth</option>
+                    <option value="Goals & Achievements">Goals & Achievements</option>
+                    <option value="Relationships">Relationships</option>
+                    <option value="Habits & Routines">Habits & Routines</option>
+                    <option value="Custom">Custom</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="questionText">Question:</label>
+                <textarea id="questionText" placeholder="Enter your reflection question here..."></textarea>
+            </div>
+            <button class="btn-primary" onclick="addQuestion()">Add Question</button>
+        </div>
+
+        <div class="questions-list hidden" id="questionsList">
+            <h3>All Questions</h3>
+            <div id="questionsContainer"></div>
+            <div class="stats">
+                <strong>Total Questions: <span id="totalCount">0</span></strong>
+                <br><small style="color: #666; margin-top: 5px; display: block;">
+                    Note: Questions are stored in memory and will reset when page is refreshed
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Pre-loaded questions from the image
+        let questions = [
+            {
+                category: "Backward Looking",
+                text: "What were the big moments, memories, and milestones from this year?"
+            },
+            {
+                category: "Backward Looking", 
+                text: "How could I be a better: Son/Daughter • Employee • Manager • Partner • Mentor • Friend"
+            },
+            {
+                category: "Backward Looking",
+                text: "What are some things that weighed on me throughout the year? What did I learn from them?"
+            },
+            {
+                category: "Backward Looking",
+                text: "How did I grow as a person? • New habits • New priorities • New preferences • New perspectives"
+            },
+            {
+                category: "Backward Looking",
+                text: "What things do I look back on most fondly, that brought me the most energy and joy? • People • Places • Habits • Tasks • Experiences"
+            },
+            {
+                category: "Backward Looking",
+                text: "What things do I look back on less fondly, draining my energy and weighing on me throughout the year? • People • Places • Habits • Tasks • Experiences"
+            },
+            {
+                category: "Backward Looking",
+                text: "What am I most grateful for in 2021?"
+            },
+            {
+                category: "Backward Looking",
+                text: "What's on my 'best of' list? • Books • Events • Articles • Podcasts • Purchases • New habits"
+            },
+            {
+                category: "Backward Looking",
+                text: "What were my biggest achievements in this area? What are the 20% of things that led to this achievement?"
+            },
+            {
+                category: "Backward Looking",
+                text: "Where did I most fall short in this area? What are the 20% of things that contributed to me falling short?"
+            },
+            {
+                category: "Backward Looking",
+                text: "What were the 5 most difficult conversations of the year?"
+            },
+            {
+                category: "Forward Looking",
+                text: "What's the single biggest bottleneck to my continued growth? And why aren't I relentlessly focused on removing it?"
+            },
+            {
+                category: "Forward Looking",
+                text: "If I had unlimited money, how would I invest today to increase my time, energy, or happiness?"
+            },
+            {
+                category: "Forward Looking",
+                text: "If I repeated my weekly actions every week for 5 years, where would I end up? Is this where I want to end up?"
+            },
+            {
+                category: "Forward Looking",
+                text: "What's currently nagging me that I could: • Automate • Eliminate • Delegate"
+            },
+            {
+                category: "Forward Looking",
+                text: "How could I achieve my 10-year goals in 1 year? And similarly, how could I achieve 10x my 1-year goals this year?"
+            },
+            {
+                category: "Forward Looking",
+                text: "Imagine your career is a game & ask questions like: • What game am I playing? • What are the rules of the game? • How do players advance? • How do players lose? • Is this game still worth playing?"
+            },
+            {
+                category: "Forward Looking",
+                text: "What are some things I could start doing today that would guarantee an absolutely horrible year?"
+            },
+            {
+                category: "Forward Looking",
+                text: "Where am I taking myself too seriously? And where am I making things harder than they need to be?"
+            },
+            {
+                category: "Forward Looking",
+                text: "Am I 'spending' them? Or am I 'investing' them? (With my finite resources: • Time • Energy • Attention • Capital)"
+            },
+            {
+                category: "Forward Looking",
+                text: "How am I complicit in creating the conditions I say I don't want?"
+            }
+        ];
+
+        // Load questions (in-memory only)
+        function loadQuestions() {
+            updateQuestionsDisplay();
+            updateStats();
+        }
+
+        // Save questions (in-memory only - no persistent storage)
+        function saveQuestions() {
+            // Questions are stored in memory during the session
+            // Note: Questions will reset when page is refreshed
+        }
+
+        // Get random question
+        function getRandomQuestion() {
+            if (questions.length === 0) {
+                document.getElementById('questionDisplay').innerHTML = 
+                    '<div class="question-text">No questions available. Add some questions first!</div>';
+                return;
+            }
+            
+            const randomIndex = Math.floor(Math.random() * questions.length);
+            const question = questions[randomIndex];
+            
+            document.getElementById('questionDisplay').innerHTML = 
+                `<div class="question-text">
+                    <div style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; margin-bottom: 15px; display: inline-block;">
+                        ${question.category}
+                    </div>
+                    <div>${question.text}</div>
+                </div>`;
+        }
+
+        // Add new question
+        function addQuestion() {
+            const category = document.getElementById('questionCategory').value;
+            const text = document.getElementById('questionText').value.trim();
+            
+            if (!text) {
+                alert('Please enter a question!');
+                return;
+            }
+            
+            questions.push({ category, text });
+            saveQuestions();
+            updateQuestionsDisplay();
+            updateStats();
+            
+            // Clear form
+            document.getElementById('questionText').value = '';
+            
+            alert('Question added successfully!');
+        }
+
+        // Delete question
+        function deleteQuestion(index) {
+            if (confirm('Are you sure you want to delete this question?')) {
+                questions.splice(index, 1);
+                saveQuestions();
+                updateQuestionsDisplay();
+                updateStats();
+            }
+        }
+
+        // Update questions display
+        function updateQuestionsDisplay() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            
+            questions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-item';
+                questionDiv.innerHTML = `
+                    <div class="question-content">
+                        <div class="question-category">${question.category}</div>
+                        <div class="question-text-item">${question.text}</div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteQuestion(${index})">Delete</button>
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        // Update stats
+        function updateStats() {
+            document.getElementById('totalCount').textContent = questions.length;
+        }
+
+        // Toggle sections
+        function toggleAddSection() {
+            const section = document.getElementById('addQuestionSection');
+            section.classList.toggle('hidden');
+        }
+
+        function toggleQuestionsList() {
+            const section = document.getElementById('questionsList');
+            section.classList.toggle('hidden');
+        }
+
+        // Clear all questions
+        function clearAllQuestions() {
+            if (confirm('Are you sure you want to delete ALL questions? This cannot be undone!')) {
+                questions = [];
+                saveQuestions();
+                updateQuestionsDisplay();
+                updateStats();
+                document.getElementById('questionDisplay').innerHTML = 
+                    '<div class="question-text">All questions cleared. Add some new ones!</div>';
+            }
+        }
+
+        // Initialize
+        window.onload = function() {
+            loadQuestions();
+        };
+    </script>
+</body>
+</html>
